@@ -21,6 +21,8 @@ module.exports = {
   sendViaMail: "Отправить по эл. почте",
   showQrCode: "Показать QR-код",
   uploadCompleted: "Отправка завершена",
+  uploadLink: "Ссылка на загрузку",
+  uploadLinkCreated: "Ссылка на загрузку создана",
   downloadLink: "Ссылка для скачивания",
   upload: "отправка",
   retry: "повтор",

@@ -95,6 +95,11 @@ export default {
       state.files.splice(0, state.files.length);
       state.sid = randomSid();
     },
+    SET_SID(state, sid) {
+      state.sid = sid;
+      state.password = '';
+      state.files.splice(0, state.files.length);
+    },
   },
 
   actions: {

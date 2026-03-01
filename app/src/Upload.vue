@@ -13,7 +13,7 @@
         span.hidden-xs  {{ $root.lang.newUpload }}
       a.btn.btn-sm.btn-info(
         href="#",
-        @click.prevent,
+        @click.prevent="createUploadLink",
         :title='$root.lang.createUploadLink',
         tabindex="0",
         role="button"
@@ -34,7 +34,22 @@
       button.uploadPass.btn.btn-primary(:disabled='uploadPassword.length<1', type="submit")
         icon.fa-fw(name="key")
         |  {{ $root.lang.login }}
-    div(v-else-if="$root.configFetched")
+    div(v-else-if="$root.configFetched && !isInvalidBucket")
+      .well(v-if="showUploadLinkPanel")
+        .pull-right.btn-group.upload-success-btns
+          clipboard.btn.btn-primary(
+            :value='uploadLink',
+            :title="$root.lang.copyToClipboard",
+            tabindex="0"
+          )
+        h3.text-success
+          icon.fa-fw(name="link")
+          |  {{ $root.lang.uploadLinkCreated }}
+        div.share-link
+          span.title {{ $root.lang.uploadLink }}:
+          |
+          a(:href='uploadLink') {{ uploadLink }}
+
       .well(v-show="state === 'uploaded'")
         .pull-right.btn-group.upload-success-btns
           a.btn.btn-primary(
@@ -106,6 +121,7 @@
   import 'vue-awesome/icons/exclamation-triangle';
   import 'vue-awesome/icons/link';
   import { humanFileSize } from "./Upload/store/upload";
+  import { httpPost } from "./common/util";
 
 
   export default {
@@ -120,6 +136,7 @@
       return {
         uploadPassword: '',
         uploadPasswordWrong: null,
+        showUploadLinkPanel: false,
       }
     },
 
@@ -134,8 +151,15 @@
           && this.$store.state.config.mailTemplate
           && this.$store.state.config.mailTemplate.replace('%%URL%%', this.shareUrl);
       },
+      uploadLink() {
+        const path = (typeof window.PSITRANSFER_UPLOAD_PATH !== 'undefined' ? window.PSITRANSFER_UPLOAD_PATH : '/').replace(/\/$/, '');
+        return window.location.origin + path + '?sid=' + this.sid;
+      },
       showLogin() {
         return this.uploadPassRequired && this.uploadPasswordWrong !== false;
+      },
+      isInvalidBucket() {
+        return this.error === 'Bucket not found';
       },
       showUploadBtn() {
         return this.files.length
@@ -155,6 +179,22 @@
     },
 
     methods: {
+      async createUploadLink() {
+        try {
+          const path = (typeof window.PSITRANSFER_UPLOAD_PATH !== 'undefined' ? window.PSITRANSFER_UPLOAD_PATH : '/').replace(/\/$/, '');
+          const url = window.location.origin + (path || '') + '/create-upload-bucket';
+          const headers = {};
+          const up = this.$store.state.config && this.$store.state.config.uploadPass;
+          if (up) headers['x-passwd'] = up;
+          const res = await httpPost(url, {}, { headers });
+          if (res && res.sid) {
+            this.$store.commit('upload/SET_SID', res.sid);
+            this.showUploadLinkPanel = true;
+          }
+        } catch (e) {
+          this.$store.commit('ERROR', e.message || 'Failed to create upload link', { root: true });
+        }
+      },
       newSession() {
         if (!confirm(this.$root.lang.createNewUploadSession)) return;
         document.location.reload();
@@ -164,6 +204,12 @@
           this.$store.commit('config/SET', {uploadPass: this.uploadPassword});
           await this.$store.dispatch('config/fetch');
           this.uploadPasswordWrong = false;
+          if (!document.location.search.match(/sid=[^&]/)) {
+            const path = (typeof window.PSITRANSFER_UPLOAD_PATH !== 'undefined' ? window.PSITRANSFER_UPLOAD_PATH : '/').replace(/\/$/, '');
+            const url = window.location.origin + (path || '') + '/create-upload-bucket';
+            const res = await httpPost(url, {}, { headers: { 'x-passwd': this.uploadPassword } });
+            if (res && res.sid) this.$store.commit('upload/SET_SID', res.sid);
+          }
         } catch(e) {
           if(e.code === 'PWDREQ') {
             this.uploadPassword = '';
