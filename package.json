@@ -29,12 +29,15 @@
     "tar-stream": "^3.1.7",
     "to-object-reducer": "^1.0.1"
   },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  },
   "bin": {
     "psitransfer": "cli.js"
   },
   "scripts": {
-    "start": "NODE_ENV=production node app.js",
-    "dev": "NODE_ENV=dev DEBUG=psitransfer:* nodemon -i app -i dist -i data app.js",
+    "start": "cross-env NODE_ENV=production node app.js",
+    "dev": "cross-env NODE_ENV=dev DEBUG=psitransfer:* nodemon -i app -i dist -i data app.js",
     "debug": "node --inspect app.js"
   },
   "engines": {
