@@ -4,19 +4,9 @@ import Vue from 'vue';
 import Upload from './Upload.vue';
 import store from './Upload/store.js';
 import Icon from 'vue-awesome/components/Icon'
-import {httpGet, httpPost} from "./common/util";
+import {httpGet} from "./common/util";
 
 Vue.component('icon', Icon);
-
-async function createUploadBucket(store) {
-  const path = (typeof window.PSITRANSFER_UPLOAD_PATH !== 'undefined' ? window.PSITRANSFER_UPLOAD_PATH : '/').replace(/\/$/, '');
-  const url = window.location.origin + (path || '') + '/create-upload-bucket';
-  const headers = {};
-  const up = store.state.config && store.state.config.uploadPass;
-  if (up) headers['x-passwd'] = up;
-  const res = await httpPost(url, {}, { headers });
-  return res.sid;
-}
 
 async function checkBucketIfSidPresent(store) {
   const match = document.location.search.match(/sid=([^&]+)/);
@@ -68,18 +58,9 @@ new Vue({
     }
     this.configFetched = true;
 
-    // If ссылка содержит sid=..., проверяем, что bucket зарегистрирован.
-    // Иначе создаём новую корзину на сервере.
-    if (document.location.search.match(/sid=([^&]+)/)) {
-      await checkBucketIfSidPresent(this.$store);
-    } else {
-      try {
-        const sid = await createUploadBucket(this.$store);
-        this.$store.commit('upload/SET_SID', sid);
-      } catch (e) {
-        console.error('createUploadBucket failed:', e);
-      }
-    }
+// If the link contains sid=..., we check that the bucket is registered.
+// New buckets can only be retrieved by clicking the "Create download link" button.
+    await checkBucketIfSidPresent(this.$store);
   }
 });
 

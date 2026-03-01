@@ -204,12 +204,6 @@
           this.$store.commit('config/SET', {uploadPass: this.uploadPassword});
           await this.$store.dispatch('config/fetch');
           this.uploadPasswordWrong = false;
-          if (!document.location.search.match(/sid=[^&]/)) {
-            const path = (typeof window.PSITRANSFER_UPLOAD_PATH !== 'undefined' ? window.PSITRANSFER_UPLOAD_PATH : '/').replace(/\/$/, '');
-            const url = window.location.origin + (path || '') + '/create-upload-bucket';
-            const res = await httpPost(url, {}, { headers: { 'x-passwd': this.uploadPassword } });
-            if (res && res.sid) this.$store.commit('upload/SET_SID', res.sid);
-          }
         } catch(e) {
           if(e.code === 'PWDREQ') {
             this.uploadPassword = '';
