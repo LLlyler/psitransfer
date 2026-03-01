@@ -10,7 +10,7 @@ const config = {
   // set to serve PsiTransfer from a sub-path
   "baseUrl": '/',
   // use to set custom upload url (subfolder to baseUrl)
-  "uploadAppPath": '/',
+  "uploadAppPath": '/main',
   "iface": '0.0.0.0',
   // set to false to disable HTTP
   "port": 3000,

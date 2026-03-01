@@ -12,6 +12,7 @@ module.exports = {
   optional: "Не обязательно",
   generateRandomPassword: "Сгенерировать случайный пароль",
   newUpload: "Новая загрузка",
+  createUploadLink: "Создать ссылку на загрузку",
   accessDenied: "Доступ запрещён!",
   login: "Логин",
   email: "Эл. почта",

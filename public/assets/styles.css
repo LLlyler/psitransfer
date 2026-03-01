@@ -63,6 +63,14 @@ body > .container {
   top: 15px;
   right: 15px;
 }
+.upload-top-buttons {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+.upload-top-buttons .btn + .btn {
+  margin-left: 10px;
+}
 .well h3 {
   margin-top: 0;
 }

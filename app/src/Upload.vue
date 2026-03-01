@@ -1,16 +1,25 @@
 <template lang="pug">
   .upload-app#uploadApp
-    a.btn.btn-sm.btn-info.btn-new-session(
-      v-if='!showLogin',
-      @click='newSession()',
-      @keydown.enter.prevent='newSession()',
-      @keydown.space.prevent='newSession()',
-      :title='$root.lang.newUpload',
-      tabindex="-1",
-      role="button"
-    )
-      icon.fa-fw(name="cloud-upload-alt")
-      span.hidden-xs  {{ $root.lang.newUpload }}
+    .btn-group.upload-top-buttons(v-if='!showLogin')
+      a.btn.btn-sm.btn-info(
+        @click='newSession()',
+        @keydown.enter.prevent='newSession()',
+        @keydown.space.prevent='newSession()',
+        :title='$root.lang.newUpload',
+        tabindex="-1",
+        role="button"
+      )
+        icon.fa-fw(name="cloud-upload-alt")
+        span.hidden-xs  {{ $root.lang.newUpload }}
+      a.btn.btn-sm.btn-info(
+        href="#",
+        @click.prevent,
+        :title='$root.lang.createUploadLink',
+        tabindex="0",
+        role="button"
+      )
+        icon.fa-fw(name="link")
+        span.hidden-xs  {{ $root.lang.createUploadLink }}
     .alert.alert-danger(v-show="error")
       strong
         icon.fa-fw(name="exclamation-triangle")
@@ -95,6 +104,7 @@
   import 'vue-awesome/icons/envelope';
   import 'vue-awesome/icons/qrcode';
   import 'vue-awesome/icons/exclamation-triangle';
+  import 'vue-awesome/icons/link';
   import { humanFileSize } from "./Upload/store/upload";
 
 
