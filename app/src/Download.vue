@@ -106,9 +106,14 @@
     name: 'app',
     components: { FileIcon, Clipboard, PreviewModal },
     data () {
+      // Prefer sid from query (?sid=...), fallback to last path segment.
+      const queryMatch = document.location.search.match(/[?&]sid=([^&]+)/);
+      const sidFromQuery = queryMatch && queryMatch[1];
+      const sidFromPath = document.location.pathname.match(/^.*\/([^\/?#]+)/)[1];
+
       return {
         files: [],
-        sid: document.location.pathname.match(/^.*\/([^\/?#]+)/)[1],
+        sid: sidFromQuery || sidFromPath,
         baseURI: this.$root.baseURI,
         passwordWrong: false,
         needsPassword: false,
