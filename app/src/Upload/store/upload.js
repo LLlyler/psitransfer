@@ -49,7 +49,11 @@ export default {
 
   getters: {
     shareUrl: state => {
-      return document.head.getElementsByTagName('base')[0].href + state.sid;
+      const base = document.head.getElementsByTagName('base')[0].href.replace(/\/$/, '');
+      const uploadPath = (typeof window.PSITRANSFER_UPLOAD_PATH !== 'undefined'
+        ? window.PSITRANSFER_UPLOAD_PATH
+        : '/').replace(/\/$/, '');
+      return base + uploadPath + '?sid=' + state.sid;
     },
     percentUploaded: (state, getters) => {
       return Math.min(
